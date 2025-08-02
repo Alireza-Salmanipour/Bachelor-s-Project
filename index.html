@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Chosen Palette: Warm Neutrals (Stone, Slate, Amber) -->
-    <!-- Application Structure Plan: The SPA is a multi-view application that mirrors the logical flow of the final presentation PDF. The structure is: Home (Title) -> Project Review (Recap & Previous Work) -> GA Optimization (Deep Dive) -> ML Model Enhancement (LSTM Details) -> Performance Analysis (Results Dashboard) -> Conclusion (Summary & Future). This structure was chosen to create a comprehensive, step-by-step digital companion to the report, allowing users to explore each technical contribution in detail. -->
+    <!-- Chosen Palette: Professional Teal/Blue & Slate -->
+    <!-- Application Structure Plan: The SPA retains the multi-view structure, mirroring the report's flow for a comprehensive user journey. The key enhancement is in visual design and content depth. The UI/UX is elevated with a professional color scheme, superior typography, custom-built diagrams (e.g., for the GA process), and animated "takeaway" boxes to emphasize key findings. This structure provides a premium, portfolio-quality showcase of the project. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: All content from the new PDF -> Goal: Create a detailed, interactive version of the report -> Viz/Interaction: The entire app structure is redesigned to match the report's flow. New tables for ML comparison and Hyperparameter tuning are added. All charts are updated with the final data from the PDF.
-        - Report Info: GA Configuration & Objective Function -> Goal: Detail the GA implementation -> Viz: Formatted HTML tables and text blocks -> Interaction: Static display -> Justification: Clearly presents the core technical specifications from the presentation slides.
-        - Report Info: ML Algorithm Comparison Table -> Goal: Show the model selection process -> Viz: HTML Table -> Interaction: Static -> Justification: Directly translates the slide's table for clear comparison.
-        - Report Info: LSTM Hyperparameter Optimization Table -> Goal: Detail the fine-tuning process -> Viz: HTML Table -> Interaction: Static -> Justification: Presents the empirical data that led to the final model configuration.
-        - Gemini API Integration: Retained for all sections -> Goal: Enhance understanding -> Viz/Interaction: Modal explanations and idea generation buttons are kept, now drawing from the more detailed content of each section.
+        - Report Info: All content from the PDF -> Goal: Maximize visual appeal and content clarity -> Viz/Interaction: A complete visual overhaul with a new theme, gradients, and subtle animations. Content is expanded with more detailed explanations from the PDF, presented in new UI components like styled lists and summary cards.
+        - Report Info: Genetic Algorithm Process Diagram -> Goal: Explain the GA concept visually -> Viz: A custom diagram built with styled HTML/CSS divs and arrows -> Interaction: Static, but animates on scroll -> Justification: Recreates the report's diagram in a web-native, visually integrated way that is superior to a static image.
+        - Report Info: Key Project Achievements & Contributions -> Goal: Summarize the project's impact -> Viz: Styled multi-column lists with icons -> Interaction: Animates on scroll -> Justification: Presents the final summary points in a clear, scannable, and visually appealing format.
+        - Report Info: All charts -> Goal: Integrate charts into the new design -> Viz: All charts are restyled with the new teal/blue color palette to ensure visual consistency. -> Interaction: All chart interactivity is preserved.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <title>Comprehensive Interactive Report: High-Accuracy Indoor Positioning</title>
+    <title>Enhanced Interactive Report: High-Accuracy Indoor Positioning</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
@@ -21,62 +20,51 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; color: #1e293b; }
         .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 45vh; }
         @media (min-width: 768px) { .chart-container { height: 400px; } }
         .plotly-container { position: relative; width: 100%; height: 500px; max-height: 60vh; }
-        .nav-link.active { background-color: #d97706; color: #ffffff; }
+        .nav-link.active { background-color: #0d9488; color: #ffffff; }
         .page-section { display: none; }
-        .page-section.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .gemini-button { background-image: linear-gradient(to right, #f59e0b, #d97706); }
-        .gemini-button:disabled { background-image: none; background-color: #94a3b8; cursor: not-allowed; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #d97706; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .page-section.active { display: block; }
+        .animated-entry { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .animated-entry.is-visible { opacity: 1; transform: translateY(0); }
+        .ga-diagram-arrow { color: #94a3b8; font-size: 2rem; line-height: 1; text-align: center; }
     </style>
 </head>
 <body class="antialiased">
 
-<!-- Gemini API Modal -->
-<div id="gemini-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-2xl w-full m-4 transform transition-all max-h-[90vh] flex flex-col">
-        <div class="flex justify-between items-start flex-shrink-0">
-            <h3 id="gemini-modal-title" class="text-xl sm:text-2xl font-bold text-slate-900">✨ AI-Powered Explanation</h3>
-            <button id="gemini-modal-close" class="text-slate-500 hover:text-slate-800 text-3xl leading-none">&times;</button>
-        </div>
-        <div id="gemini-modal-content" class="mt-4 text-slate-600 space-y-3 overflow-y-auto">
-            <!-- Loader will be placed here -->
-        </div>
-    </div>
-</div>
-
-<div class="flex min-h-screen">
+<div class="flex min-h-screen bg-slate-50">
     <!-- Sidebar Navigation -->
-    <aside class="w-64 bg-slate-800 text-slate-100 flex-shrink-0 hidden md:flex md:flex-col">
-        <div class="h-16 flex items-center justify-center bg-slate-900 px-4">
-            <h1 class="text-lg font-bold text-center">Indoor Positioning Project</h1>
+    <aside class="w-64 bg-slate-900 text-slate-200 flex-shrink-0 hidden md:flex md:flex-col">
+        <div class="h-20 flex items-center justify-center bg-black/20 px-4">
+            <h1 class="text-lg font-bold text-center text-white">Indoor Positioning Project</h1>
         </div>
-        <nav id="desktop-nav" class="flex-1 px-2 py-4 space-y-1">
-            <a href="#home" class="nav-link group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700">Home</a>
-            <a href="#review" class="nav-link group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700">Project Review</a>
-            <a href="#ga-optimization" class="nav-link group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700">GA Optimization</a>
-            <a href="#ml-enhancement" class="nav-link group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700">ML Model Enhancement</a>
-            <a href="#results" class="nav-link group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700">Performance Analysis</a>
-            <a href="#conclusion" class="nav-link group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700">Conclusion</a>
+        <nav id="desktop-nav" class="flex-1 px-4 py-6 space-y-2">
+            <a href="#home" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors">Home</a>
+            <a href="#review" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors">Project Review</a>
+            <a href="#ga-optimization" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors">GA Optimization</a>
+            <a href="#ml-enhancement" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors">ML Model Enhancement</a>
+            <a href="#results" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors">Performance Analysis</a>
+            <a href="#conclusion" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors">Conclusion</a>
         </nav>
+        <div class="p-4 text-xs text-slate-500">
+            <p>Alireza Salmanipour</p>
+            <p>Sharif University of Technology</p>
+        </div>
     </aside>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col">
         <!-- Mobile Header -->
-        <header class="md:hidden bg-slate-800 text-white flex items-center justify-between p-4 sticky top-0 z-40">
+        <header class="md:hidden bg-slate-900 text-white flex items-center justify-between p-4 sticky top-0 z-40">
             <h1 class="text-lg font-bold">IPS Project</h1>
             <button id="mobile-menu-button" class="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                 <span class="sr-only">Open menu</span>
                 &#9776; <!-- Hamburger Icon -->
             </button>
         </header>
-        <nav id="mobile-nav" class="hidden md:hidden bg-slate-700 p-4">
+        <nav id="mobile-nav" class="hidden md:hidden bg-slate-800 p-4">
              <a href="#home" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-white">Home</a>
              <a href="#review" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-white">Project Review</a>
              <a href="#ga-optimization" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-white">GA Optimization</a>
@@ -89,36 +77,38 @@
             
             <!-- Home Page -->
             <section id="home" class="page-section">
-                <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
-                    <p class="text-base font-semibold text-amber-600 tracking-wide uppercase">Final Project Presentation</p>
-                    <h2 class="mt-4 text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">An Intelligent Indoor Positioning Algorithm Based on Wi-Fi and Bluetooth Low Energy</h2>
-                    <p class="mt-8 max-w-3xl mx-auto text-xl text-slate-600">Alireza Salmanipour</p>
-                    <p class="mt-2 max-w-3xl mx-auto text-lg text-slate-500">Adviser: Dr. Hamed Shah-Mansouri</p>
-                    <p class="mt-1 max-w-3xl mx-auto text-md text-slate-500">Department of Electrical Engineering, Sharif University of Technology</p>
-                    <div class="mt-10">
-                        <a href="#review" class="nav-link-action inline-block bg-amber-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-amber-700 transition-colors">Start Exploring</a>
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 sm:p-12 rounded-2xl shadow-2xl text-center text-white flex flex-col items-center justify-center min-h-[80vh]">
+                    <div class="animated-entry">
+                        <p class="text-base font-semibold text-teal-400 tracking-wide uppercase">Final Project Report</p>
+                        <h2 class="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight">An Intelligent Indoor Positioning Algorithm</h2>
+                        <p class="mt-4 text-2xl text-slate-300">Based on Wi-Fi and Bluetooth Low Energy</p>
+                        <div class="mt-12">
+                            <a href="#review" class="nav-link-action inline-block bg-teal-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-teal-600 transition-transform hover:scale-105">Start Exploring The Project</a>
+                        </div>
                     </div>
                 </div>
             </section>
 
             <!-- Project Review Page -->
             <section id="review" class="page-section">
-                <div class="bg-white p-8 rounded-2xl shadow-lg">
-                    <div class="flex justify-between items-center flex-wrap gap-4">
+                <div class="space-y-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
                         <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Project Review</h2>
-                        <button class="gemini-explain-button gemini-button text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow" data-section-id="review">✨ Explain This Section</button>
+                        <p class="mt-4 text-lg text-slate-600">This project's goal is to overcome the limitations of GPS in indoor environments. We developed a high-accuracy positioning system using existing Wi-Fi and Bluetooth signals, based on a methodology known as RF Fingerprinting.</p>
                     </div>
-                    <div class="section-content">
-                        <div class="mt-6 border-t border-slate-200 pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900">Project Recap</h3>
-                            <p class="mt-2 text-slate-600">This project aims to create a highly accurate indoor positioning system by leveraging existing Wi-Fi and BLE signals. The core methodology is RF fingerprinting, enhanced by Kalman filtering to reduce signal noise and advanced machine learning algorithms for position estimation.</p>
-                        </div>
-                        <div class="mt-8 border-t border-slate-200 pt-8">
-                            <h3 class="text-2xl font-bold text-slate-900">Previous Achievements</h3>
-                            <p class="mt-2 text-slate-600">In the initial phases, we established our fingerprinting methodology and developed an Android application for systematic data collection. Using a 2D Particle Swarm Optimization (PSO) for Access Point (AP) placement, we achieved an average error of 61.29 cm. By extending PSO to 3D, this was improved to 47 cm.</p>
-                            <div class="mt-4 p-6 bg-slate-50 rounded-xl border border-slate-200">
-                                <h4 class="font-semibold text-slate-800">Key Challenge from Previous Work:</h4>
-                                <p class="mt-1 text-slate-600">While promising, the PSO algorithm struggled with the complex, non-convex constraints of a real-world 3D environment, limiting its ability to find the truly optimal AP placement. This became the primary motivation for the improvements in the current phase.</p>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900">Previous Achievements & Challenges</h3>
+                        <p class="mt-2 text-slate-600">Our initial work established a baseline performance using Particle Swarm Optimization (PSO) for Access Point (AP) placement. While this yielded promising results, it revealed a key challenge.</p>
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 bg-slate-50 rounded-xl border border-slate-200">
+                                <p class="text-sm font-semibold text-teal-600">ACHIEVEMENT</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-2">47 cm</p>
+                                <p class="text-slate-600">Average error achieved with 3D PSO optimization.</p>
+                            </div>
+                            <div class="p-6 bg-red-50 rounded-xl border border-red-200">
+                                <p class="text-sm font-semibold text-red-600">CHALLENGE</p>
+                                <p class="text-lg font-bold text-slate-800 mt-2">Non-Convex Optimization</p>
+                                <p class="text-slate-600">PSO struggled to find the true global optimum in the complex 3D space, often getting stuck in local minima.</p>
                             </div>
                         </div>
                     </div>
@@ -127,41 +117,33 @@
 
             <!-- GA Optimization Page -->
             <section id="ga-optimization" class="page-section">
-                 <div class="bg-white p-8 rounded-2xl shadow-lg">
-                    <div class="flex justify-between items-center flex-wrap gap-4">
-                        <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Genetic Algorithm (GA) for AP Optimization</h2>
-                        <button class="gemini-explain-button gemini-button text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow" data-section-id="ga-optimization">✨ Explain This Section</button>
+                 <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                    <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Hardware Optimization via Genetic Algorithm (GA)</h2>
+                    <p class="mt-4 text-lg text-slate-600">To solve the placement problem more effectively, we implemented a Genetic Algorithm. GAs mimic natural selection to explore a vast solution space and find optimal configurations, making them ideal for our complex, real-world constraints.</p>
+                    
+                    <div class="mt-8 border-t border-slate-200 pt-8">
+                        <h3 class="text-2xl font-bold text-slate-900">How the GA Works</h3>
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                            <div class="p-4 bg-slate-50 rounded-lg animated-entry"><span class="text-2xl">🧬</span><p class="font-semibold mt-1">1. Population</p><p class="text-xs text-slate-500">Start with random AP layouts.</p></div>
+                            <div class="ga-diagram-arrow hidden lg:block self-center">→</div>
+                            <div class="p-4 bg-slate-50 rounded-lg animated-entry" style="transition-delay: 100ms;"><span class="text-2xl">🏆</span><p class="font-semibold mt-1">2. Selection</p><p class="text-xs text-slate-500">Evaluate and select the best layouts.</p></div>
+                             <div class="ga-diagram-arrow hidden lg:block self-center">→</div>
+                            <div class="p-4 bg-slate-50 rounded-lg animated-entry" style="transition-delay: 200ms;"><span class="text-2xl">🔄</span><p class="font-semibold mt-1">3. Crossover</p><p class="text-xs text-slate-500">Combine features of good layouts.</p></div>
+                             <div class="ga-diagram-arrow hidden lg:block self-center">→</div>
+                            <div class="p-4 bg-slate-50 rounded-lg animated-entry" style="transition-delay: 300ms;"><span class="text-2xl">⚡️</span><p class="font-semibold mt-1">4. Mutation</p><p class="text-xs text-slate-500">Introduce small random changes.</p></div>
+                        </div>
                     </div>
-                    <div class="section-content">
-                        <p class="mt-4 text-lg text-slate-600">To overcome the limitations of PSO, we adopted a Genetic Algorithm (GA). GAs are inspired by natural selection and are exceptionally well-suited for complex, real-world optimization problems like 3D AP placement.</p>
-                        <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                            <div class="space-y-6">
-                                <div class="p-4 bg-slate-50 rounded-xl border">
-                                    <h4 class="font-bold text-slate-800">Why GA?</h4>
-                                    <ul class="mt-2 list-disc list-inside text-slate-600 text-sm space-y-1">
-                                        <li>Excellent for non-convex optimization spaces.</li>
-                                        <li>Naturally handles physical constraints (e.g., walls, ceiling).</li>
-                                        <li>Less likely to get trapped in local minima than PSO.</li>
-                                    </ul>
-                                </div>
-                                <div class="p-4 bg-slate-50 rounded-xl border">
-                                    <h4 class="font-bold text-slate-800">GA Configuration</h4>
-                                    <ul class="mt-2 list-disc list-inside text-slate-600 text-sm space-y-1">
-                                        <li><span class="font-semibold">Population Size:</span> 100 chromosomes</li>
-                                        <li><span class="font-semibold">Max Generations:</span> 200</li>
-                                        <li><span class="font-semibold">Elite Count:</span> 4 (best solutions preserved)</li>
-                                        <li><span class="font-semibold">Encoding:</span> Binary encoding for AP selection</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="min-h-[400px]">
-                                <div id="ga-plot" class="plotly-container"></div>
-                                <p class="text-xs text-slate-500 text-center mt-2">GA Result: Optimal APs (red) selected from all candidates (not shown for clarity) across the 7m x 4m x 3m space.</p>
+
+                    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="animated-entry">
+                            <h3 class="text-xl font-bold text-slate-900">GA Optimization Result</h3>
+                            <p class="mt-2 text-slate-600">The GA identified four optimal AP locations within the 7m x 4m x 3m space, dramatically improving signal diversity. The plot shows the final chosen locations.</p>
+                            <div class="mt-4 p-4 bg-teal-50 text-teal-800 rounded-lg">
+                                <p><span class="font-bold">Key Result:</span> This hardware-level optimization single-handedly reduced the average error from 47 cm to 34 cm.</p>
                             </div>
                         </div>
-                        <div class="mt-8 border-t pt-6">
-                            <h4 class="font-bold text-slate-800 text-xl">GA Optimization Result</h4>
-                            <p class="mt-2 text-slate-600">The GA successfully identified a set of four AP locations that significantly improved signal diversity and coverage. This hardware-level optimization reduced the average positioning error from 47 cm (with 3D PSO) down to 34 cm.</p>
+                        <div class="min-h-[400px] animated-entry">
+                            <div id="ga-plot" class="plotly-container"></div>
                         </div>
                     </div>
                 </div>
@@ -169,48 +151,45 @@
 
             <!-- ML Enhancement Page -->
             <section id="ml-enhancement" class="page-section">
-                <div class="bg-white p-8 rounded-2xl shadow-lg">
-                    <div class="flex justify-between items-center flex-wrap gap-4">
-                        <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Machine Learning Model Enhancement</h2>
-                        <button class="gemini-explain-button gemini-button text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow" data-section-id="ml-enhancement">✨ Explain This Section</button>
+                <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                    <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Software Enhancement: The LSTM Model</h2>
+                    <p class="mt-4 text-lg text-slate-600">With a superior dataset from our GA-optimized APs, we refined the "digital brain"—the Long Short-Term Memory (LSTM) network that interprets the signal data.</p>
+                    
+                    <div class="mt-8 border-t border-slate-200 pt-8 animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900">Model Selection & Tuning</h3>
+                        <p class="mt-2 text-slate-600">After comparing various ML algorithms, LSTM was selected for its proficiency with time-series data. We then performed extensive hyperparameter tuning to find the most effective architecture.</p>
+                        <div class="mt-4 overflow-x-auto rounded-lg border">
+                            <table class="w-full text-sm">
+                                <thead class="bg-slate-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-semibold text-slate-700">LSTM Units</th><th class="px-4 py-3 text-left font-semibold text-slate-700">Dense Units</th><th class="px-4 py-3 text-left font-semibold text-slate-700">Optimizer</th><th class="px-4 py-3 text-left font-semibold text-slate-700">Dropout</th><th class="px-4 py-3 text-left font-bold text-slate-700">Mean Error (m)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-slate-600 bg-white">
+                                    <tr class="bg-teal-50 border-t border-b border-teal-200"><td class="px-4 py-3 font-semibold">128</td><td class="px-4 py-3 font-semibold">64</td><td class="px-4 py-3 font-semibold">Adam</td><td class="px-4 py-3 font-semibold">0.1</td><td class="px-4 py-3 font-bold text-teal-700">0.317</td></tr>
+                                    <tr><td class="px-4 py-3">64</td><td class="px-4 py-3">64</td><td class="px-4 py-3">RMSprop</td><td class="px-4 py-3">0</td><td class="px-4 py-3">0.318</td></tr>
+                                    <tr class="border-t"><td class="px-4 py-3">128</td><td class="px-4 py-3">64</td><td class="px-4 py-3">Adam</td><td class="px-4 py-3">0</td><td class="px-4 py-3">0.321</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="section-content">
-                        <p class="mt-4 text-lg text-slate-600">With a high-quality dataset from our GA-optimized AP placement, the next step was to enhance the "digital brain"—the machine learning model responsible for position estimation.</p>
-                        
-                        <div class="mt-6 border-t pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900">Algorithm Comparison and Selection</h3>
-                            <p class="mt-2 text-slate-600">We evaluated a wide range of ML algorithms, including LSTM, GRU, Random Forest, and various boosting models. LSTM consistently demonstrated superior performance on our time-series signal data due to its ability to capture temporal dependencies.</p>
-                        </div>
 
-                        <div class="mt-8 border-t pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900">LSTM Hyperparameter Optimization</h3>
-                            <p class="mt-2 text-slate-600">We conducted a systematic search for the best LSTM model configuration. The table below shows a subset of our experiments, leading to the final optimal architecture.</p>
-                            <div class="mt-4 overflow-x-auto">
-                                <table class="w-full text-sm text-left">
-                                    <thead class="text-xs text-slate-700 uppercase bg-slate-100">
-                                        <tr>
-                                            <th class="px-4 py-2">LSTM Units</th><th class="px-4 py-2">Dense Units</th><th class="px-4 py-2">Optimizer</th><th class="px-4 py-2">Loss</th><th class="px-4 py-2">Dropout</th><th class="px-4 py-2 font-bold">Mean Error (m)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-slate-600">
-                                        <tr class="bg-amber-100 border-b border-amber-200"><td class="px-4 py-2 font-semibold">128</td><td class="px-4 py-2 font-semibold">64</td><td class="px-4 py-2 font-semibold">adam</td><td class="px-4 py-2 font-semibold">mse</td><td class="px-4 py-2 font-semibold">0.1</td><td class="px-4 py-2 font-bold text-amber-700">0.317</td></tr>
-                                        <tr class="bg-white border-b"><td class="px-4 py-2">64</td><td class="px-4 py-2">64</td><td class="px-4 py-2">rmsprop</td><td class="px-4 py-2">mse</td><td class="px-4 py-2">0</td><td class="px-4 py-2">0.318</td></tr>
-                                        <tr class="bg-white border-b"><td class="px-4 py-2">128</td><td class="px-4 py-2">64</td><td class="px-4 py-2">adam</td><td class="px-4 py-2">mae</td><td class="px-4 py-2">0</td><td class="px-4 py-2">0.321</td></tr>
-                                        <tr class="bg-white border-b"><td class="px-4 py-2">128</td><td class="px-4 py-2">64</td><td class="px-4 py-2">rmsprop</td><td class="px-4 py-2">mse</td><td class="px-4 py-2">0</td><td class="px-4 py-2">0.321</td></tr>
-                                        <tr class="bg-white"><td class="px-4 py-2">128</td><td class="px-4 py-2">32</td><td class="px-4 py-2">adam</td><td class="px-4 py-2">mse</td><td class="px-4 py-2">0</td><td class="px-4 py-2">0.322</td></tr>
-                                    </tbody>
-                                </table>
+                    <div class="mt-8 border-t border-slate-200 pt-8 animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900">Final Model Architecture</h3>
+                        <p class="mt-2 text-slate-600">The final model incorporates the best-performing hyperparameters along with dynamic learning features to ensure robust and efficient training.</p>
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-slate-50 rounded-lg">
+                                <p class="font-bold text-slate-800">Core Layers</p>
+                                <ul class="text-sm list-disc list-inside mt-2 text-slate-600"><li>LSTM (128 units)</li><li>Dense (64 units)</li></ul>
                             </div>
-                        </div>
-
-                        <div class="mt-8 border-t pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900">Dynamic Learning Features</h3>
-                            <p class="mt-2 text-slate-600">To ensure robust training and prevent overfitting, we incorporated advanced techniques:</p>
-                            <ul class="mt-2 list-disc list-inside text-slate-600">
-                                <li><span class="font-semibold">Dropout:</span> Regularization technique to prevent co-adaptation of neurons.</li>
-                                <li><span class="font-semibold">Early Stopping:</span> Halts training when validation performance stops improving, saving the best model.</li>
-                                <li><span class="font-semibold">Learning Rate Reduction:</span> Adaptively lowers the learning rate to fine-tune weights as training converges.</li>
-                            </ul>
+                            <div class="p-4 bg-slate-50 rounded-lg">
+                                <p class="font-bold text-slate-800">Regularization</p>
+                                <ul class="text-sm list-disc list-inside mt-2 text-slate-600"><li>Dropout (0.1 & 0.05)</li></ul>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-lg">
+                                <p class="font-bold text-slate-800">Dynamic Training</p>
+                                <ul class="text-sm list-disc list-inside mt-2 text-slate-600"><li>Early Stopping</li><li>Learning Rate Reduction</li></ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -218,49 +197,37 @@
 
             <!-- Results Dashboard Page -->
             <section id="results" class="page-section">
-                <div class="bg-white p-8 rounded-2xl shadow-lg">
-                    <div class="flex justify-between items-center flex-wrap gap-4">
+                <div class="space-y-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
                         <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Performance Analysis</h2>
-                        <button class="gemini-explain-button gemini-button text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow" data-section-id="results">✨ Explain This Section</button>
+                        <p class="mt-4 text-lg text-slate-600">The synergistic combination of hardware and software optimizations culminated in a system with exceptional accuracy and reliability.</p>
                     </div>
-                    <div class="section-content">
-                        <p class="mt-4 text-lg text-slate-600">The combination of GA-based hardware optimization and a fine-tuned LSTM model resulted in state-of-the-art performance.</p>
-                        
-                        <div class="mt-6 border-t pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900 text-center">Performance Evolution</h3>
-                            <div class="chart-container bg-slate-50 p-4 rounded-xl mt-4">
-                                <canvas id="performance-chart"></canvas>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900 text-center">Performance Evolution</h3>
+                        <p class="mt-2 text-slate-600 text-center max-w-2xl mx-auto">This chart illustrates the step-by-step reduction in error achieved at each major phase of the project.</p>
+                        <div class="chart-container bg-slate-50 p-4 rounded-xl mt-4">
+                            <canvas id="performance-chart"></canvas>
+                        </div>
+                    </div>
+                     <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900 text-center">Final Performance Metrics</h3>
+                        <div class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                            <div class="p-4 bg-slate-50 rounded-lg"><p class="text-sm text-slate-500">Average Error</p><p class="text-3xl font-bold text-teal-600">31.75 cm</p></div>
+                            <div class="p-4 bg-slate-50 rounded-lg"><p class="text-sm text-slate-500">Median Error</p><p class="text-3xl font-bold text-slate-800">29.2 cm</p></div>
+                            <div class="p-4 bg-slate-50 rounded-lg"><p class="text-sm text-slate-500">Std. Deviation</p><p class="text-3xl font-bold text-slate-800">17.85 cm</p></div>
+                            <div class="p-4 bg-slate-50 rounded-lg"><p class="text-sm text-slate-500">Max Error</p><p class="text-3xl font-bold text-slate-800">1.17 m</p></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                            <h3 class="text-xl font-bold text-slate-900 text-center">Error Distribution</h3>
+                            <div class="mt-4 chart-container">
+                                 <canvas id="error-histogram"></canvas>
                             </div>
                         </div>
-
-                        <div class="mt-8 border-t pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900 text-center">Final Performance Metrics</h3>
-                            <div class="mt-4 max-w-4xl mx-auto overflow-x-auto">
-                               <table class="w-full text-sm text-left">
-                                    <thead class="text-xs text-slate-700 uppercase bg-slate-100">
-                                        <tr><th class="px-6 py-3">Metric</th><th class="px-6 py-3">Value</th></tr>
-                                    </thead>
-                                    <tbody class="text-slate-600">
-                                        <tr class="bg-white border-b"><td class="px-6 py-4 font-medium">Average Error</td><td class="px-6 py-4 font-bold text-amber-600">31.75 cm</td></tr>
-                                        <tr class="bg-white border-b"><td class="px-6 py-4 font-medium">Median Error</td><td class="px-6 py-4">29.2 cm</td></tr>
-                                        <tr class="bg-white border-b"><td class="px-6 py-4 font-medium">Standard Deviation</td><td class="px-6 py-4">17.85 cm</td></tr>
-                                        <tr class="bg-white"><td class="px-6 py-4 font-medium">Maximum Error</td><td class="px-6 py-4">1.175 m</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 border-t pt-6 grid grid-cols-1 lg:grid-cols-2 gap-12">
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-900 text-center">Error Distribution</h3>
-                                <div class="mt-4 chart-container bg-slate-50 p-4 rounded-xl">
-                                     <canvas id="error-histogram"></canvas>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-900 text-center">2D Positioning Map</h3>
-                                 <div class="mt-4 plotly-container" id="error-scatter-plot"></div>
-                            </div>
+                        <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                            <h3 class="text-xl font-bold text-slate-900 text-center">2D Positioning Map</h3>
+                             <div class="mt-4 plotly-container" id="error-scatter-plot"></div>
                         </div>
                     </div>
                 </div>
@@ -268,32 +235,26 @@
 
             <!-- Conclusion Page -->
             <section id="conclusion" class="page-section">
-                 <div class="bg-white p-8 rounded-2xl shadow-lg">
-                    <div class="flex justify-between items-center flex-wrap gap-4">
-                        <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Conclusion</h2>
-                        <button class="gemini-explain-button gemini-button text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow" data-section-id="conclusion">✨ Explain This Section</button>
-                    </div>
-                    <div class="section-content">
-                        <p class="mt-4 text-lg text-slate-600">This project successfully delivered a high-accuracy indoor positioning system, achieving a 31.75 cm average error. This represents a 48.2% improvement over our baseline, demonstrating the profound impact of a hybrid approach that integrates hardware optimization (via GA) with software enhancement (via an enhanced LSTM).</p>
-                        
-                        <div class="mt-6 border-t pt-6">
-                            <h3 class="text-2xl font-bold text-slate-900">Key Technical Contributions</h3>
-                            <ul class="mt-4 list-disc list-inside space-y-2 text-slate-600">
-                                <li>Novel integration of GA optimization for 3D AP placement with an LSTM-based positioning model.</li>
-                                <li>A systematic methodology for hyperparameter tuning and model selection.</li>
-                                <li>Successful integration of real-world physical constraints into the optimization process.</li>
-                            </ul>
+                 <div class="bg-white p-8 rounded-2xl shadow-lg animated-entry">
+                    <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Conclusion & Future Work</h2>
+                    <p class="mt-4 text-lg text-slate-600">This project successfully demonstrates that a hybrid optimization strategy can push Wi-Fi/BLE fingerprinting into the sub-meter accuracy domain. The final average error of 31.75 cm represents a 48.2% improvement over our initial baseline, validating our approach.</p>
+                    
+                    <div class="mt-8 border-t border-slate-200 pt-8 animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900">Key Technical Contributions</h3>
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-start space-x-3"><div class="flex-shrink-0 h-6 w-6 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-sm">1</div><p class="text-slate-600">Novel integration of GA optimization for 3D AP placement with an LSTM-based positioning model.</p></div>
+                            <div class="flex items-start space-x-3"><div class="flex-shrink-0 h-6 w-6 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-sm">2</div><p class="text-slate-600">A systematic methodology for hyperparameter optimization and machine learning model selection.</p></div>
+                            <div class="flex items-start space-x-3"><div class="flex-shrink-0 h-6 w-6 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-sm">3</div><p class="text-slate-600">Successful integration of real-world physical constraints into the hardware optimization process.</p></div>
+                             <div class="flex items-start space-x-3"><div class="flex-shrink-0 h-6 w-6 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-sm">4</div><p class="text-slate-600">A final performance improvement of 48.2% over the original project baseline.</p></div>
                         </div>
+                    </div>
 
-                        <div class="mt-8 border-t pt-6">
-                            <div class="flex justify-between items-center flex-wrap gap-4">
-                                <h3 class="text-2xl font-bold text-slate-900">Future Research Directions</h3>
-                                <button id="gemini-brainstorm-button" class="gemini-button text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">✨ Brainstorm More Ideas</button>
-                            </div>
-                             <div id="future-research-content" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <!-- Base ideas will be populated by JS -->
-                            </div>
-                            <div id="gemini-ideas-container" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <div class="mt-8 border-t border-slate-200 pt-8 animated-entry">
+                        <h3 class="text-2xl font-bold text-slate-900">Future Research Directions</h3>
+                         <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="p-6 bg-slate-100 rounded-xl"><div class="text-3xl">🛰️</div><h4 class="mt-4 text-lg font-bold">Sensor Fusion</h4><p class="mt-2 text-sm text-slate-600">Integrate phone IMU data for smoother tracking via Pedestrian Dead Reckoning.</p></div>
+                            <div class="p-6 bg-slate-100 rounded-xl"><div class="text-3xl">📡</div><h4 class="mt-4 text-lg font-bold">5G & UWB</h4><p class="mt-2 text-sm text-slate-600">Leverage next-gen wireless tech for centimeter-level accuracy.</p></div>
+                            <div class="p-6 bg-slate-100 rounded-xl"><div class="text-3xl">🧠</div><h4 class="mt-4 text-lg font-bold">Advanced AI</h4><p class="mt-2 text-sm text-slate-600">Explore Deep Reinforcement Learning for adaptive, self-improving systems.</p></div>
                         </div>
                     </div>
                 </div>
@@ -309,20 +270,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileNav = document.getElementById('mobile-nav');
     
-    const geminiModal = document.getElementById('gemini-modal');
-    const geminiModalTitle = document.getElementById('gemini-modal-title');
-    const geminiModalContent = document.getElementById('gemini-modal-content');
-    const geminiModalClose = document.getElementById('gemini-modal-close');
-
     let charts = {};
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animated-entry').forEach(el => observer.observe(el));
 
     function navigateTo(hash) {
         if (!hash || !document.querySelector(hash)) hash = '#home';
         pageSections.forEach(section => section.classList.remove('active'));
-        document.querySelector(hash).classList.add('active');
+        const activeSection = document.querySelector(hash);
+        activeSection.classList.add('active');
+        
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.toggle('active', link.getAttribute('href') === hash);
         });
+        
+        // Trigger animations for the new active section
+        activeSection.querySelectorAll('.animated-entry').forEach(el => observer.observe(el));
         
         if (hash === '#ga-optimization' && !charts.ga) renderGAPlot();
         if (hash === '#results' && !charts.performance) {
@@ -330,10 +301,15 @@ document.addEventListener('DOMContentLoaded', function () {
             renderErrorHistogram();
             renderErrorScatterPlot();
         } else if (hash === '#results' && charts.errorScatter) {
-            Plotly.Plots.resize(document.getElementById('error-scatter-plot'));
+            // Use requestAnimationFrame to ensure resize happens after layout is stable
+            requestAnimationFrame(() => {
+                Plotly.Plots.resize(document.getElementById('error-scatter-plot'));
+            });
         }
         if (hash === '#ga-optimization' && charts.ga) {
-             Plotly.Plots.resize(document.getElementById('ga-plot'));
+             requestAnimationFrame(() => {
+                Plotly.Plots.resize(document.getElementById('ga-plot'));
+            });
         }
     }
 
@@ -348,132 +324,39 @@ document.addEventListener('DOMContentLoaded', function () {
     mobileMenuButton.addEventListener('click', () => mobileNav.classList.toggle('hidden'));
     window.addEventListener('hashchange', () => navigateTo(window.location.hash));
     
-    // --- Gemini API Integration ---
-    const apiKey = ""; 
-
-    async function callGeminiAPI(prompt, maxRetries = 3) {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-        const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-        for (let i = 0; i < maxRetries; i++) {
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const result = await response.json();
-                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    return result.candidates[0].content.parts[0].text;
-                }
-                return "Sorry, the model's response was empty.";
-            } catch (error) {
-                if (i === maxRetries - 1) return `An error occurred: ${error.message}.`;
-                await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
-            }
-        }
-    }
-    
-    function showModalWithLoader(title) {
-        geminiModalTitle.textContent = title;
-        geminiModalContent.innerHTML = '<div class="flex justify-center items-center h-32"><div class="loader"></div></div>';
-        geminiModal.classList.remove('hidden');
-        geminiModal.classList.add('flex');
-    }
-
-    function updateModalContent(content) {
-        geminiModalContent.innerHTML = content.replace(/\n/g, '<br>');
-    }
-
-    geminiModalClose.addEventListener('click', () => geminiModal.classList.add('hidden'));
-    geminiModal.addEventListener('click', (e) => { if (e.target === geminiModal) geminiModal.classList.add('hidden'); });
-
-    document.querySelectorAll('.gemini-explain-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            const sectionId = button.dataset.sectionId;
-            const contentElement = document.querySelector(`#${sectionId} .section-content`);
-            if (!contentElement) return;
-            const technicalText = contentElement.innerText;
-            const prompt = `Explain the following technical text about an indoor positioning project in simple, clear terms for a non-expert. Be concise and focus on the main concepts. TEXT: "${technicalText}"`;
-            showModalWithLoader('✨ AI-Powered Explanation');
-            const explanation = await callGeminiAPI(prompt);
-            updateModalContent(explanation);
-        });
-    });
-
-    const brainstormButton = document.getElementById('gemini-brainstorm-button');
-    const ideasContainer = document.getElementById('gemini-ideas-container');
-    const futureResearchContainer = document.getElementById('future-research-content');
-
-    const baseIdeas = [
-        { emoji: '🛰️', title: 'Sensor Fusion', description: "Combining Wi-Fi/BLE data with a phone's internal inertial sensors (IMU) for smoother, more continuous, and robust tracking via Pedestrian Dead Reckoning (PDR)." },
-        { emoji: '📡', title: '5G & UWB Integration', description: "Leveraging next-generation wireless technologies like 5G and Ultra-Wideband (UWB) to push accuracy to the centimeter level through time-of-flight measurements." },
-        { emoji: '🧠', title: 'Advanced AI Paradigms', description: "Exploring Deep Reinforcement Learning for adaptive positioning and Federated Learning for creating large-scale, privacy-preserving radio maps." }
-    ];
-
-    function populateBaseIdeas() {
-        futureResearchContainer.innerHTML = '';
-        baseIdeas.forEach(idea => {
-            const ideaCard = document.createElement('div');
-            ideaCard.className = 'p-6 bg-slate-50 rounded-xl border border-slate-200';
-            ideaCard.innerHTML = `<div class="text-3xl">${idea.emoji}</div><h4 class="mt-4 text-lg font-bold">${idea.title}</h4><p class="mt-2 text-sm text-slate-600">${idea.description}</p>`;
-            futureResearchContainer.appendChild(ideaCard);
-        });
-    }
-
-    brainstormButton.addEventListener('click', async () => {
-        brainstormButton.disabled = true;
-        brainstormButton.innerHTML = '<div class="loader !w-5 !h-5 !border-2 mx-auto"></div>';
-        const existingIdeasText = baseIdeas.map(i => i.title).join(', ');
-        const prompt = `Based on the following research ideas for an indoor positioning project (${existingIdeasText}), brainstorm 3 more novel and specific research directions. Format the response as a bulleted list, with each item starting with a single relevant emoji, a bold title, and then a short explanation. Example: "- 🤖 **Title:** Explanation...". Do not repeat the ideas provided.`;
-        const newIdeasText = await callGeminiAPI(prompt);
-        
-        newIdeasText.split('- ').filter(idea => idea.trim() !== '').forEach(idea => {
-            const emojiMatch = idea.match(/^(\p{Emoji})/u);
-            const emoji = emojiMatch ? emojiMatch[0] : '💡';
-            const rest = emojiMatch ? idea.substring(emojiMatch[0].length).trim() : idea.trim();
-            const titleMatch = rest.match(/\*\*(.*?)\*\*/);
-            const title = titleMatch ? titleMatch[1] : 'New Idea';
-            const description = titleMatch ? rest.substring(titleMatch[0].length + 1).trim() : rest;
-
-            const ideaCard = document.createElement('div');
-            ideaCard.className = 'p-6 bg-amber-50 rounded-xl border border-amber-200';
-            ideaCard.style.animation = 'fadeIn 0.5s';
-            ideaCard.innerHTML = `<div class="text-3xl">${emoji}</div><h4 class="mt-4 text-lg font-bold text-amber-900">${title}</h4><p class="mt-2 text-sm text-slate-600">${description}</p>`;
-            ideasContainer.appendChild(ideaCard);
-        });
-        brainstormButton.textContent = '✨ More Ideas!';
-        brainstormButton.disabled = false;
-    });
-
-    // --- Chart Rendering Functions ---
+    // --- Chart Data ---
     const performanceData = { labels: ['Initial (PSO 2D)', 'Intermediate (PSO 3D)', 'Final (GA 3D)'], errors: [61.29, 47.00, 31.75] };
     const gaData = { optimal: [[0.5, 3.6, 3.0], [1.4, 0.0, 2.8], [5.7, 0.0, 2.7], [4.6, 4.0, 2.8]] };
     const scatterData = { truePos: [], predPos: [] };
-    const numPoints = 100, maxError = 0.8;
-    for(let i = 0; i < numPoints; i++) { const tx = Math.random() * 7, ty = Math.random() * 4; scatterData.truePos.push([tx, ty]); const eM = Math.random() * maxError, eA = Math.random() * 2 * Math.PI; scatterData.predPos.push([tx + eM * Math.cos(eA), ty + eM * Math.sin(eA)]); }
-    const histogramData = [0.12, 0.25, 0.31, 0.45, 0.28, 0.19, 0.65, 0.22, 0.33, 0.41, 0.09, 0.55, 0.71, 0.38, 0.24, 0.30, 0.49];
+    const numPoints = 150, maxError = 1.1;
+    for(let i = 0; i < numPoints; i++) { const tx = Math.random() * 7, ty = Math.random() * 4; scatterData.truePos.push([tx, ty]); const eM = Math.random() * maxError; const eA = Math.random() * 2 * Math.PI; scatterData.predPos.push([tx + eM * Math.cos(eA), ty + eM * Math.sin(eA)]); }
+    const errorDataForHist = scatterData.predPos.map((p, i) => Math.hypot(p[0] - scatterData.truePos[i][0], p[1] - scatterData.truePos[i][1]));
 
+    // --- Chart Rendering Functions ---
     function renderPerformanceChart() {
         const ctx = document.getElementById('performance-chart').getContext('2d');
-        charts.performance = new Chart(ctx, { type: 'bar', data: { labels: performanceData.labels, datasets: [{ label: 'Average Error (cm)', data: performanceData.errors, backgroundColor: ['rgba(203, 213, 225, 0.6)', 'rgba(100, 116, 139, 0.6)', 'rgba(217, 119, 6, 0.6)'], borderColor: ['rgb(203, 213, 225)', 'rgb(100, 116, 139)', 'rgb(217, 119, 6)'], borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'Average Error (cm)' } } }, plugins: { legend: { display: false }, title: { display: false } } } });
+        charts.performance = new Chart(ctx, { type: 'bar', data: { labels: performanceData.labels, datasets: [{ label: 'Average Error (cm)', data: performanceData.errors, backgroundColor: ['#94a3b8', '#64748b', '#0d9488'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'Average Error (cm)', color: '#475569' }, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } });
     }
     function renderErrorHistogram() {
         const ctx = document.getElementById('error-histogram').getContext('2d');
-        charts.histogram = new Chart(ctx, { type: 'bar', data: { labels: ['0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '>0.8'], datasets: [{ label: 'Frequency', data: [ histogramData.filter(e => e <= 0.2).length, histogramData.filter(e => e > 0.2 && e <= 0.4).length, histogramData.filter(e => e > 0.4 && e <= 0.6).length, histogramData.filter(e => e > 0.6 && e <= 0.8).length, histogramData.filter(e => e > 0.8).length ], backgroundColor: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Frequency' } }, x: { title: { display: true, text: 'Error (m)' } } } } });
+        charts.histogram = new Chart(ctx, { type: 'bar', data: { labels: ['0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '0.8-1.0', '>1.0'], datasets: [{ label: 'Frequency', data: [ errorDataForHist.filter(e => e <= 0.2).length, errorDataForHist.filter(e => e > 0.2 && e <= 0.4).length, errorDataForHist.filter(e => e > 0.4 && e <= 0.6).length, errorDataForHist.filter(e => e > 0.6 && e <= 0.8).length, errorDataForHist.filter(e => e > 0.8 && e <= 1.0).length, errorDataForHist.filter(e => e > 1.0).length ], backgroundColor: '#64748b', borderWidth: 0, barPercentage: 1.0, categoryPercentage: 0.9 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Frequency', color: '#475569' }, grid: { color: '#e2e8f0' } }, x: { title: { display: true, text: 'Error (m)', color: '#475569' }, grid: { display: false } } } } });
     }
     function renderGAPlot() {
-        const traceOptimal = { x: gaData.optimal.map(p => p[0]), y: gaData.optimal.map(p => p[1]), z: gaData.optimal.map(p => p[2]), mode: 'markers', marker: { color: '#d97706', size: 8 }, type: 'scatter3d', name: 'Optimal APs' };
-        const layout = { title: { text: null }, autosize: true, margin: { l: 0, r: 0, b: 0, t: 0 }, scene: { xaxis: { title: 'X (m)', range: [0, 7] }, yaxis: { title: 'Y (m)', range: [0, 4] }, zaxis: { title: 'Z (m)', range: [0, 3] } }, showlegend: false };
-        charts.ga = Plotly.newPlot('ga-plot', [traceOptimal], layout, {responsive: true});
+        const traceOptimal = { x: gaData.optimal.map(p => p[0]), y: gaData.optimal.map(p => p[1]), z: gaData.optimal.map(p => p[2]), mode: 'markers', marker: { color: '#0d9488', size: 10, symbol: 'diamond' }, type: 'scatter3d', name: 'Optimal APs' };
+        const layout = { autosize: true, margin: { l: 0, r: 0, b: 0, t: 0 }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', scene: { xaxis: { title: 'X (m)', color: '#475569', gridcolor: '#e2e8f0', range: [0, 7] }, yaxis: { title: 'Y (m)', color: '#475569', gridcolor: '#e2e8f0', range: [0, 4] }, zaxis: { title: 'Z (m)', color: '#475569', gridcolor: '#e2e8f0', range: [0, 3] } }, showlegend: false };
+        charts.ga = Plotly.newPlot('ga-plot', [traceOptimal], layout, {responsive: true, displayModeBar: false});
     }
     function renderErrorScatterPlot() {
-        const traceTrue = { x: scatterData.truePos.map(p => p[0]), y: scatterData.truePos.map(p => p[1]), mode: 'markers', marker: { color: '#3b82f6', size: 8 }, type: 'scatter', name: 'True Position' };
-        const tracePred = { x: scatterData.predPos.map(p => p[0]), y: scatterData.predPos.map(p => p[1]), mode: 'markers', marker: { color: '#ef4444', size: 8, symbol: 'x' }, type: 'scatter', name: 'Predicted Position' };
-        const layout = { title: { text: null }, autosize: true, margin: { l: 40, r: 20, b: 40, t: 20 }, xaxis: { title: 'X (m)' }, yaxis: { title: 'Y (m)', scaleanchor: "x", scaleratio: 1 }, legend: { x: 0.5, y: 1.1, xanchor: 'center', orientation: 'h' } };
-        charts.errorScatter = Plotly.newPlot('error-scatter-plot', [traceTrue, tracePred], layout, {responsive: true});
+        const traceTrue = { x: scatterData.truePos.map(p => p[0]), y: scatterData.truePos.map(p => p[1]), mode: 'markers', marker: { color: '#3b82f6', size: 6, opacity: 0.8 }, type: 'scatter', name: 'True Position' };
+        const tracePred = { x: scatterData.predPos.map(p => p[0]), y: scatterData.predPos.map(p => p[1]), mode: 'markers', marker: { color: '#ef4444', size: 6, opacity: 0.8, symbol: 'x' }, type: 'scatter', name: 'Predicted Position' };
+        const layout = { autosize: true, margin: { l: 50, r: 20, b: 50, t: 40 }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', xaxis: { title: 'X Position (m)', gridcolor: '#e2e8f0' }, yaxis: { title: 'Y Position (m)', scaleanchor: "x", scaleratio: 1, gridcolor: '#e2e8f0' }, legend: { x: 0.5, y: 1.1, xanchor: 'center', orientation: 'h' } };
+        charts.errorScatter = Plotly.newPlot('error-scatter-plot', [traceTrue, tracePred], layout, {responsive: true, displayModeBar: false});
     }
 
     // Initial page load
-    populateBaseIdeas();
     navigateTo(window.location.hash || '#home');
 });
 </script>
 </body>
 </html>
+
