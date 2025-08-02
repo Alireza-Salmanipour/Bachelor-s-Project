@@ -3,16 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Chosen Palette: Professional Teal/Blue & Slate -->
-    <!-- Application Structure Plan: The SPA retains the multi-view structure, mirroring the report's flow for a comprehensive user journey. The key enhancement is in visual design and content depth. The UI/UX is elevated with a professional color scheme, superior typography, custom-built diagrams (e.g., for the GA process), and animated "takeaway" boxes to emphasize key findings. This structure provides a premium, portfolio-quality showcase of the project. -->
-    <!-- Visualization & Content Choices: 
-        - Report Info: All content from the PDF -> Goal: Maximize visual appeal and content clarity -> Viz/Interaction: A complete visual overhaul with a new theme, gradients, and subtle animations. Content is expanded with more detailed explanations from the PDF, presented in new UI components like styled lists and summary cards.
-        - Report Info: Genetic Algorithm Process Diagram -> Goal: Explain the GA concept visually -> Viz: A custom diagram built with styled HTML/CSS divs and arrows -> Interaction: Static, but animates on scroll -> Justification: Recreates the report's diagram in a web-native, visually integrated way that is superior to a static image.
-        - Report Info: Key Project Achievements & Contributions -> Goal: Summarize the project's impact -> Viz: Styled multi-column lists with icons -> Interaction: Animates on scroll -> Justification: Presents the final summary points in a clear, scannable, and visually appealing format.
-        - Report Info: All charts -> Goal: Integrate charts into the new design -> Viz: All charts are restyled with the new teal/blue color palette to ensure visual consistency. -> Interaction: All chart interactivity is preserved.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <title>Enhanced Interactive Report: High-Accuracy Indoor Positioning</title>
+    <title>An Intelligent Indoor Positioning Algorithm</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
@@ -79,7 +70,7 @@
             <section id="home" class="page-section">
                 <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 sm:p-12 rounded-2xl shadow-2xl text-center text-white flex flex-col items-center justify-center min-h-[80vh]">
                     <div class="animated-entry">
-                        <p class="text-base font-semibold text-teal-400 tracking-wide uppercase">Final Project Report</p>
+                        
                         <h2 class="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight">An Intelligent Indoor Positioning Algorithm</h2>
                         <p class="mt-4 text-2xl text-slate-300">Based on Wi-Fi and Bluetooth Low Energy</p>
                         <div class="mt-12">
@@ -292,7 +283,6 @@ document.addEventListener('DOMContentLoaded', function () {
             link.classList.toggle('active', link.getAttribute('href') === hash);
         });
         
-        // Trigger animations for the new active section
         activeSection.querySelectorAll('.animated-entry').forEach(el => observer.observe(el));
         
         if (hash === '#ga-optimization' && !charts.ga) renderGAPlot();
@@ -301,14 +291,13 @@ document.addEventListener('DOMContentLoaded', function () {
             renderErrorHistogram();
             renderErrorScatterPlot();
         } else if (hash === '#results' && charts.errorScatter) {
-            // Use requestAnimationFrame to ensure resize happens after layout is stable
             requestAnimationFrame(() => {
-                Plotly.Plots.resize(document.getElementById('error-scatter-plot'));
+                if(document.getElementById('error-scatter-plot')) Plotly.Plots.resize(document.getElementById('error-scatter-plot'));
             });
         }
         if (hash === '#ga-optimization' && charts.ga) {
              requestAnimationFrame(() => {
-                Plotly.Plots.resize(document.getElementById('ga-plot'));
+                if(document.getElementById('ga-plot')) Plotly.Plots.resize(document.getElementById('ga-plot'));
             });
         }
     }
@@ -329,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gaData = { optimal: [[0.5, 3.6, 3.0], [1.4, 0.0, 2.8], [5.7, 0.0, 2.7], [4.6, 4.0, 2.8]] };
     const scatterData = { truePos: [], predPos: [] };
     const numPoints = 150, maxError = 1.1;
-    for(let i = 0; i < numPoints; i++) { const tx = Math.random() * 7, ty = Math.random() * 4; scatterData.truePos.push([tx, ty]); const eM = Math.random() * maxError; const eA = Math.random() * 2 * Math.PI; scatterData.predPos.push([tx + eM * Math.cos(eA), ty + eM * Math.sin(eA)]); }
+    for(let i = 0; i < numPoints; i++) { const tx = Math.random() * 7, ty = Math.random() * 4; scatterData.truePos.push([tx, ty]); const eM = Math.random() * maxError, eA = Math.random() * 2 * Math.PI; scatterData.predPos.push([tx + eM * Math.cos(eA), ty + eM * Math.sin(eA)]); }
     const errorDataForHist = scatterData.predPos.map((p, i) => Math.hypot(p[0] - scatterData.truePos[i][0], p[1] - scatterData.truePos[i][1]));
 
     // --- Chart Rendering Functions ---
@@ -359,4 +348,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 </body>
 </html>
-
