@@ -17,7 +17,8 @@
         .plotly-container { position: relative; width: 100%; height: 500px; max-height: 60vh; }
         .nav-link.active { background-color: #0d9488; color: #ffffff; }
         .page-section { display: none; }
-        .page-section.active { display: block; }
+        .page-section.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animated-entry { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .animated-entry.is-visible { opacity: 1; transform: translateY(0); }
         .ga-diagram-arrow { color: #94a3b8; font-size: 2rem; line-height: 1; text-align: center; }
@@ -70,7 +71,6 @@
             <section id="home" class="page-section">
                 <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 sm:p-12 rounded-2xl shadow-2xl text-center text-white flex flex-col items-center justify-center min-h-[80vh]">
                     <div class="animated-entry">
-                        
                         <h2 class="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight">An Intelligent Indoor Positioning Algorithm</h2>
                         <p class="mt-4 text-2xl text-slate-300">Based on Wi-Fi and Bluetooth Low Energy</p>
                         <div class="mt-12">
@@ -274,16 +274,25 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.animated-entry').forEach(el => observer.observe(el));
 
     function navigateTo(hash) {
-        if (!hash || !document.querySelector(hash)) hash = '#home';
-        pageSections.forEach(section => section.classList.remove('active'));
+        if (!hash || !document.querySelector(hash)) {
+            hash = '#home';
+        }
+        
+        pageSections.forEach(section => {
+            section.classList.remove('active');
+        });
         const activeSection = document.querySelector(hash);
-        activeSection.classList.add('active');
+        if (activeSection) {
+            activeSection.classList.add('active');
+        }
         
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.toggle('active', link.getAttribute('href') === hash);
         });
         
-        activeSection.querySelectorAll('.animated-entry').forEach(el => observer.observe(el));
+        if (activeSection) {
+            activeSection.querySelectorAll('.animated-entry').forEach(el => observer.observe(el));
+        }
         
         if (hash === '#ga-optimization' && !charts.ga) renderGAPlot();
         if (hash === '#results' && !charts.performance) {
@@ -306,11 +315,14 @@ document.addEventListener('DOMContentLoaded', function () {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             window.location.hash = this.getAttribute('href');
-            if (!mobileNav.classList.contains('hidden')) mobileNav.classList.add('hidden');
+            if (!mobileNav.classList.contains('hidden')) {
+                mobileNav.classList.add('hidden');
+            }
         });
     });
     
     mobileMenuButton.addEventListener('click', () => mobileNav.classList.toggle('hidden'));
+    
     window.addEventListener('hashchange', () => navigateTo(window.location.hash));
     
     // --- Chart Data ---
@@ -342,8 +354,13 @@ document.addEventListener('DOMContentLoaded', function () {
         charts.errorScatter = Plotly.newPlot('error-scatter-plot', [traceTrue, tracePred], layout, {responsive: true, displayModeBar: false});
     }
 
-    // Initial page load
-    navigateTo(window.location.hash || '#home');
+    // Initial page load logic
+    const initialHash = window.location.hash;
+    if (initialHash && document.querySelector(initialHash)) {
+        navigateTo(initialHash);
+    } else {
+        navigateTo('#home');
+    }
 });
 </script>
 </body>
